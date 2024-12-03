@@ -17,7 +17,7 @@ jobs:
           iq-server-url: https://iq.ajoanes.ngrok.io/
           username: ${{ secrets.LIFECYCLE_USERNAME }}
           password: ${{ secrets.LIFECYCLE_PASSWORD }}
-          application-id: struts2-rce-demo__ajoanes98
+          application-id: pygoat__ajoanes98
           scan-targets: struts2-rest-showcase.war
         
       # Fetch the SBOM file associated with the evaluation
@@ -28,7 +28,7 @@ jobs:
           iq-server-url: https://iq.ajoanes.ngrok.io/
           username: ${{ secrets.LIFECYCLE_USERNAME }}
           password: ${{ secrets.LIFECYCLE_PASSWORD }}
-          application-id: pygoat-ci
+          application-id: pygoat__ajoanes98
           scan-id: ${{ steps.evaluate.outputs.scan-id }}
           sbom-standard: cyclonedx
           sbom-version: 1.5
