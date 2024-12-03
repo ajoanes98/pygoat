@@ -12,7 +12,9 @@ jobs:
           iq-cli-version: 1.179.0-01
 
       - name: TEST
-        run: pwd
+        run: | 
+          pwd
+          ls -al
         
       # Perform an evaluation 
       - name: Run evaluate action
@@ -23,7 +25,7 @@ jobs:
           username: ${{ secrets.LIFECYCLE_USERNAME }}
           password: ${{ secrets.LIFECYCLE_PASSWORD }}
           application-id: pygoat__ajoanes98
-          scan-targets: 'scanFolder/'
+          scan-targets: .
         
       # Fetch the SBOM file associated with the evaluation
       # - name: Fetch SBOM
