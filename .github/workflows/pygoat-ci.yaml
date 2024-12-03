@@ -4,10 +4,12 @@ jobs:
   sonatype-cli:
     runs-on: ubuntu-latest
     steps:
-      # Check out your code
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
+    
+    #setup Sonatype CLI
+      - name: Setup Sonatype CLI
+        uses: sonatype/actions/setup-iq-cli@v1
+        with:
+          iq-cli-version: 1.179.0-01
         
       # Perform an evaluation 
       - name: Run evaluate action
@@ -18,19 +20,19 @@ jobs:
           username: ${{ secrets.LIFECYCLE_USERNAME }}
           password: ${{ secrets.LIFECYCLE_PASSWORD }}
           application-id: pygoat__ajoanes98
-          scan-targets: struts2-rest-showcase.war
+          scan-targets: requirements.txt
         
       # Fetch the SBOM file associated with the evaluation
-      - name: Fetch SBOM
-        uses: sonatype/actions/fetch-sbom@v1
-        if: ( success() || failure() ) && steps.evaluate.outputs.scan-id 
-        with:
-          iq-server-url: https://iq.ajoanes.ngrok.io/
-          username: ${{ secrets.LIFECYCLE_USERNAME }}
-          password: ${{ secrets.LIFECYCLE_PASSWORD }}
-          application-id: pygoat__ajoanes98
-          scan-id: ${{ steps.evaluate.outputs.scan-id }}
-          sbom-standard: cyclonedx
-          sbom-version: 1.5
-          sbom-format: json
-          artifact-name: lifecycle-app-sbom.json
+      # - name: Fetch SBOM
+      #   uses: sonatype/actions/fetch-sbom@v1
+      #   if: ( success() || failure() ) && steps.evaluate.outputs.scan-id 
+      #   with:
+      #     iq-server-url: https://iq.ajoanes.ngrok.io/
+      #     username: ${{ secrets.LIFECYCLE_USERNAME }}
+      #     password: ${{ secrets.LIFECYCLE_PASSWORD }}
+      #     application-id: pygoat__ajoanes98
+      #     scan-id: ${{ steps.evaluate.outputs.scan-id }}
+      #     sbom-standard: cyclonedx
+      #     sbom-version: 1.5
+      #     sbom-format: json
+      #     artifact-name: lifecycle-app-sbom.json
