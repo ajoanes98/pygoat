@@ -26,12 +26,8 @@ jobs:
 
     # Step 3: Install dependencies through Nexus proxy repository
     - name: Install dependencies
-      env:
-        HTTPS_PROXY: https://repo.ajoanes.ngrok.io/repository/pypi-proxy/
-        username: admin
-        password: admin1234
       run: |
-        pip install -r requirements.txt -X
+        pip install --proxy=https://admin:admin1234@repo.ajoanes.ngrok.io/repository/pypi-proxy/ -r requirements.txt
 
     # Step 4: Build the Python project
     # - name: Build the project
