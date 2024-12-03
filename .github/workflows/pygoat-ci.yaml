@@ -14,10 +14,10 @@ jobs:
         with:
           iq-cli-version: 1.179.0-01
 
-      - name: TEST
+      - name: Download pip Deps
         run: | 
-          pwd
-          ls -al
+          mkdir pip-modules
+          pip download -r requirements.txt -d pip-modules
         
       # Perform an evaluation 
       - name: Run evaluate action
