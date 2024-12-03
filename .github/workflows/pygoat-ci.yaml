@@ -31,8 +31,7 @@ jobs:
         username: admin
         password: admin1234
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r requirements.txt -X
 
     # Step 4: Build the Python project
     # - name: Build the project
