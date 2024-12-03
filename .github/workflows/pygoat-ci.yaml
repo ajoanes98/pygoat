@@ -25,16 +25,7 @@ jobs:
         python-version: '3.9'
 
     # Step 3: Install dependencies through Nexus proxy repository
-    - name: Configure and install dependencies
-      env:
-        PIP_INDEX_URL: https://repo.ajoanes.ngrok.io/repository/pypi-group/
-        PIP_EXTRA_INDEX_URL: https://pypi.org/simple  # Optional fallback
-        PIP_USER: admin
-        PIP_PASSWORD: admin1234
-      run: |
-        echo "[global]" > ~/.pip/pip.conf
-        echo "index-url = https://repo.ajoanes.ngrok.io/repository/pypi-group/ >> ~/.pip/pip.conf
-        echo "extra-index-url = https://pypi.org/simple >> ~/.pip/pip.conf
+    - name: Install dependencies
         pip install -r requirements.txt
 
     # Step 4: Build the Python project
