@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.LIFECYCLE_USERNAME }}
           password: ${{ secrets.LIFECYCLE_PASSWORD }}
           application-id: pygoat__ajoanes98
-          scan-targets: ~/scanFolder
+          scan-targets: scanFolder/
         
       # Fetch the SBOM file associated with the evaluation
       # - name: Fetch SBOM
