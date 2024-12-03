@@ -1,52 +1,36 @@
-name: Pull, Build, and Scan
-
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
-
+name: Sonatype Workflow
+on: push
 jobs:
-  build-and-scan:
+  sonatype-cli:
     runs-on: ubuntu-latest
-
     steps:
-    # Step 1: Checkout the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    # Step 2: Set up Python
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
-
-    # Step 3: Install dependencies through Nexus proxy repository
-    - name: Install dependencies
-      run: |
-        pip install --proxy=https://admin:admin1234@localhost:8081/repository/pypi-proxy/ -r requirements.txt
-
-    # Step 4: Build the Python project
-    # - name: Build the project
-    #   run: |
-    #     python setup.py sdist bdist_wheel
-
-    # Step 5: Run Sonatype Nexus IQ Scan
-    - name: Run Nexus IQ Scan
-      env:
-        NEXUS_IQ_URL: https://iq.ajoanes.ngrok.io/
-        NEXUS_IQ_APPLICATION: python-ci
-        NEXUS_IQ_USER: admin
-        NEXUS_IQ_TOKEN: iqAj610298!
-      run: |
-        curl -O https://download.sonatype.com/clm/scanner/latest/nexus-iq-cli.jar
-        java -jar nexus-iq-cli.jar \
-          -i $NEXUS_IQ_APPLICATION \
-          -s $NEXUS_IQ_URL \
-          -u $NEXUS_IQ_USER \
-          -p $NEXUS_IQ_TOKEN \
-          --stage build \
-          target/
+      # Check out your code
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
+        
+      # Perform an evaluation 
+      - name: Run evaluate action
+        id: evaluate
+        uses: sonatype/actions/evaluate@v1
+        with:
+          iq-server-url: https://iq.ajoanes.ngrok.io/
+          username: ${{ secrets.LIFECYCLE_USERNAME }}
+          password: ${{ secrets.LIFECYCLE_PASSWORD }}
+          application-id: struts2-rce-demo__ajoanes98
+          scan-targets: struts2-rest-showcase.war
+        
+      # Fetch the SBOM file associated with the evaluation
+      - name: Fetch SBOM
+        uses: sonatype/actions/fetch-sbom@v1
+        if: ( success() || failure() ) && steps.evaluate.outputs.scan-id 
+        with:
+          iq-server-url: https://iq.ajoanes.ngrok.io/
+          username: ${{ secrets.LIFECYCLE_USERNAME }}
+          password: ${{ secrets.LIFECYCLE_PASSWORD }}
+          application-id: pygoat-ci
+          scan-id: ${{ steps.evaluate.outputs.scan-id }}
+          sbom-standard: cyclonedx
+          sbom-version: 1.5
+          sbom-format: json
+          artifact-name: lifecycle-app-sbom.json
