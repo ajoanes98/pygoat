@@ -1,0 +1,59 @@
+name: Pull, Build, and Scan
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    # Step 3: Install dependencies through Nexus proxy repository
+    - name: Configure and install dependencies
+      env:
+        PIP_INDEX_URL: https://repo.ajoanes.ngrok.io/repository/pypi-group/
+        PIP_EXTRA_INDEX_URL: https://pypi.org/simple  # Optional fallback
+        PIP_USER: admin
+        PIP_PASSWORD: admin1234
+      run: |
+        echo "[global]" > ~/.pip/pip.conf
+        echo "index-url = https://repo.ajoanes.ngrok.io/repository/pypi-group/ >> ~/.pip/pip.conf
+        echo "extra-index-url = https://pypi.org/simple >> ~/.pip/pip.conf
+        pip install -r requirements.txt
+
+    # Step 4: Build the Python project
+    - name: Build the project
+      run: |
+        python setup.py sdist bdist_wheel
+
+    # Step 5: Run Sonatype Nexus IQ Scan
+    - name: Run Nexus IQ Scan
+      env:
+        NEXUS_IQ_URL: https://iq.ajoanes.ngrok.io/
+        NEXUS_IQ_APPLICATION: python-ci
+        NEXUS_IQ_USER: admin
+        NEXUS_IQ_TOKEN: iqAj610298!
+      run: |
+        curl -O https://download.sonatype.com/clm/scanner/latest/nexus-iq-cli.jar
+        java -jar nexus-iq-cli.jar \
+          -i $NEXUS_IQ_APPLICATION \
+          -s $NEXUS_IQ_URL \
+          -u $NEXUS_IQ_USER \
+          -p $NEXUS_IQ_TOKEN \
+          --stage build \
+          target/
