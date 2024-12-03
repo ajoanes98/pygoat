@@ -26,12 +26,16 @@ jobs:
 
     # Step 3: Install dependencies through Nexus proxy repository
     - name: Install dependencies
+      env:
+        HTTPS_PROXY: https://repo.ajoanes.ngrok.io/repository/pypi-group/
+      run: |
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
 
     # Step 4: Build the Python project
-    - name: Build the project
-      run: |
-        python setup.py sdist bdist_wheel
+    # - name: Build the project
+    #   run: |
+    #     python setup.py sdist bdist_wheel
 
     # Step 5: Run Sonatype Nexus IQ Scan
     - name: Run Nexus IQ Scan
